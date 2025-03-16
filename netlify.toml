@@ -1,16 +1,17 @@
-
+# 1) Configuration de build
 [build]
-  publish = "dist"
-  command = "npm ci --legacy-peer-deps && npm run build"
+  command = "npm run build"   # Commande de build
+  publish = "dist"            # Dossier à publier après le build
 
-# Define redirects so that client-side routing works with SPA
+# 2) Redirection pour les SPA (Single Page App)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Custom headers for performance and security
+# 3) En-têtes personnalisés (headers)
 [[headers]]
+  # S’applique à tous les chemins
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
@@ -18,36 +19,15 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Content-Security-Policy = "upgrade-insecure-requests"
-    Cache-Control = "public, max-age=31536000"
 
-# Environment variable configuration
+# 4) Variables d’environnement générales (tous les builds)
 [build.environment]
   NODE_VERSION = "18.18.0"
-  NPM_VERSION = "9.8.1"
-  NODE_ENV = "production"
+  NPM_VERSION = "9.8.0"
 
-# Split test for different deployment branches
-[context.main]
-  command = "npm ci --legacy-peer-deps && npm run build"
-  
-[context.staging]
-  command = "npm ci --legacy-peer-deps && npm run build:staging"
-
-# Production configuration
+# 5) Configuration spécifique au contexte de production
 [context.production]
-  environment = { NODE_ENV = "production" }
-  command = "npm ci --legacy-peer-deps && npm run build"
-
-# Domain settings
-[build.processing.html]
-  pretty_urls = true
-
-# Define custom domain
-[context.production]
-  environment = { NETLIFY_CUSTOM_DOMAIN = "mrcenpoche.xyz" }
-
-# Handle 404 errors gracefully
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  # Variables d’environnement uniquement pour la production
+  [context.production.environment]
+    NODE_ENV = "production"
+    SITE_URL = "https://mrcenpoche.xyz"
